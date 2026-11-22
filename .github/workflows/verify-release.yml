@@ -1,0 +1,56 @@
+
+name: Kiem tra ban cap nhat
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Lay ma nguon
+        uses: actions/checkout@v4
+
+      - name: Kiem tra release.json va SHA-256
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, hashlib, pathlib, re
+
+          root = pathlib.Path.cwd().resolve()
+          manifest = json.loads(
+              (root / "release.json").read_text(encoding="utf-8")
+          )
+
+          version = manifest["version"]
+          assert re.fullmatch(r"\d+\.\d+\.\d+", version)
+          assert manifest["status"] == "stable"
+          assert manifest["minCoreVersion"]
+
+          path = manifest["appJs"]
+          assert path == f"versions/{version}/app.js"
+
+          js = (root / path).resolve()
+          assert js.is_relative_to(root)
+          assert js.is_file()
+
+          actual = hashlib.sha256(js.read_bytes()).hexdigest()
+          expected = manifest["sha256"].lower()
+          assert actual == expected, "SHA-256 khong khop"
+
+          print(f"Phien ban {version}: SHA-256 hop le")
+          PY
+
+      - name: Kiem tra cu phap JavaScript
+        shell: bash
+        run: |
+          FILE=$(python3 -c 'import json; print(json.load(open("release.json"))["appJs"])')
+          node --check "$FILE"
+          echo "JavaScript hop le"
