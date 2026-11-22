@@ -1,7 +1,7 @@
 {
-  "version": "3.0.1",
+  "version": "3.0.2",
   "status": "stable",
   "minCoreVersion": "3.0.0",
-  "appJs": "versions/3.0.1/app.js",
-  "sha256": "e7fc698f0cd92faf9cd89f7472ba745b3ada38b1a09ef7fa75afb6cd20e93603"
+  "appJs": "versions/3.0.2/app.js",
+  "sha256": "a51945fa6c57fd04b50ba07a6a525195eaac0349f651b95724414e7f911c4f08"
 }
