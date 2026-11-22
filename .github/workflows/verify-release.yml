@@ -14,43 +14,122 @@ permissions:
 jobs:
   verify-release:
     runs-on: ubuntu-latest
+
     steps:
       - name: Lay ma nguon
         uses: actions/checkout@v4
 
-      - name: Kiem tra release.json va SHA-256
+      - name: Kiem tra hai kenh cap nhat
         shell: bash
         run: |
           python3 - <<'PY'
-          import json, hashlib, pathlib, re
+          import json
+          import hashlib
+          import pathlib
+          import re
+          import subprocess
 
           root = pathlib.Path.cwd().resolve()
-          manifest = json.loads(
-              (root / "release.json").read_text(encoding="utf-8")
+
+          manifests = [
+              "release.json",
+              "release-test.json"
+          ]
+
+          for filename in manifests:
+              print(f"\nKiem tra {filename}", flush=True)
+
+              manifest_file = root / filename
+              if not manifest_file.is_file():
+                  raise RuntimeError(
+                      f"Khong tim thay {filename}"
+                  )
+
+              manifest = json.loads(
+                  manifest_file.read_text(encoding="utf-8")
+              )
+
+              version = manifest.get("version", "")
+              status = manifest.get("status", "")
+              min_core = manifest.get(
+                  "minCoreVersion", ""
+              )
+              app_path = manifest.get("appJs", "")
+              expected = manifest.get("sha256", "")
+
+              if not re.fullmatch(
+                  r"\d+\.\d+\.\d+", version
+              ):
+                  raise RuntimeError(
+                      f"{filename}: Phien ban khong hop le"
+                  )
+
+              if status != "stable":
+                  raise RuntimeError(
+                      f"{filename}: Trang thai khong hop le"
+                  )
+
+              if not re.fullmatch(
+                  r"\d+\.\d+\.\d+", min_core
+              ):
+                  raise RuntimeError(
+                      f"{filename}: minCoreVersion khong hop le"
+                  )
+
+              required_path = (
+                  f"versions/{version}/app.js"
+              )
+
+              if app_path != required_path:
+                  raise RuntimeError(
+                      f"{filename}: Sai duong dan app.js"
+                  )
+
+              js = (root / app_path).resolve()
+
+              if not js.is_relative_to(root):
+                  raise RuntimeError(
+                      "Duong dan nam ngoai repository"
+                  )
+
+              if not js.is_file():
+                  raise RuntimeError(
+                      f"Khong tim thay {app_path}"
+                  )
+
+              if not re.fullmatch(
+                  r"[0-9a-fA-F]{64}", expected
+              ):
+                  raise RuntimeError(
+                      f"{filename}: SHA-256 khong hop le"
+                  )
+
+              actual = hashlib.sha256(
+                  js.read_bytes()
+              ).hexdigest()
+
+              if actual != expected.lower():
+                  raise RuntimeError(
+                      f"{filename}: SHA-256 khong khop"
+                  )
+
+              print(
+                  f"SHA-256 {version}: DAT",
+                  flush=True
+              )
+
+              subprocess.run(
+                  ["node", "--check", str(js)],
+                  check=True
+              )
+
+              print(
+                  f"Cu phap JavaScript {version}: DAT",
+                  flush=True
+              )
+
+          print(
+              "\nCA HAI KENH KIEM TRA THANH CONG",
+              flush=True
           )
-
-          version = manifest["version"]
-          assert re.fullmatch(r"\d+\.\d+\.\d+", version)
-          assert manifest["status"] == "stable"
-          assert manifest["minCoreVersion"]
-
-          path = manifest["appJs"]
-          assert path == f"versions/{version}/app.js"
-
-          js = (root / path).resolve()
-          assert js.is_relative_to(root)
-          assert js.is_file()
-
-          actual = hashlib.sha256(js.read_bytes()).hexdigest()
-          expected = manifest["sha256"].lower()
-          assert actual == expected, "SHA-256 khong khop"
-
-          print(f"Phien ban {version}: SHA-256 hop le")
           PY
-
-      - name: Kiem tra cu phap JavaScript
-        shell: bash
-        run: |
-          FILE=$(python3 -c 'import json; print(json.load(open("release.json"))["appJs"])')
-          node --check "$FILE"
-          echo "JavaScript hop le"
