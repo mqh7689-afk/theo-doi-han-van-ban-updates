@@ -7,3 +7,4 @@ Chỉ chứa mã phía trình duyệt của ứng dụng, không chứa dữ li�
 - `index.html`: trang giới thiệu tối giản.
 
 **Chưa sử dụng cho văn bản mật hoặc dữ liệu thực.** Chỉ bật cập nhật sau khi xác minh nguồn và quyền quản trị kho, kiểm thử trình duyệt và tương thích.
+Kiểm thử quy trình phát hành qua Pull Request - Bộ phân phối 3.0.
