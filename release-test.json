@@ -1,8 +1,8 @@
-
 {
   "version": "3.0.3",
   "status": "stable",
   "minCoreVersion": "3.0.0",
   "appJs": "versions/3.0.3/app.js",
-  "sha256": "e807ece80676677941ff7c710c4c7a38ae1da56d828e1ceb82dc582ec5a075ff"
+  "sha256": "e807ece80676677941ff7c710c4c7a38ae1da56d828e1ceb82dc582ec5a075ff",
+  "signature": "r7IE_IVS-a2qSCQuOujIOi0TxMA1hXmtGTm8nq3HZHiNM9pV9zOydHx24TBTzD9dflVR4QmreKj-ArJoVpdgtg"
 }
