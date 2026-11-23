@@ -1,8 +1,8 @@
 {
-  "version": "3.0.3",
+  "version": "3.0.4",
   "status": "stable",
   "minCoreVersion": "3.0.0",
-  "appJs": "versions/3.0.3/app.js",
-  "sha256": "e807ece80676677941ff7c710c4c7a38ae1da56d828e1ceb82dc582ec5a075ff",
-  "signature": "r7IE_IVS-a2qSCQuOujIOi0TxMA1hXmtGTm8nq3HZHiNM9pV9zOydHx24TBTzD9dflVR4QmreKj-ArJoVpdgtg"
+  "appJs": "versions/3.0.4/app.js",
+  "sha256": "267803b61897a386dfe78912bc2d26f84b9dcc39f75ef104c6b2bfc012730065",
+  "signature": "vkC_CKE366bJ61fvZ0JkuoqzWw8kGOQ71E1wHYFnZeLYouXXAIGpCF7JettG07nzCPIaA0k6RIP9q3-5hnfUyA"
 }
